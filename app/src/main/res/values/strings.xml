@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Console</string>
+    <string name="prompt">:~$</string>
+    <string name="prompt_hint"><font size="14">Type your command here</font></string>
+</resources>

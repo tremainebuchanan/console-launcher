@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/colorBlack"
+    android:paddingTop="16sp"
+    android:paddingBottom="16sp"
+    android:paddingEnd="16sp"
+    android:paddingStart="4sp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_horizontal"
+        android:paddingBottom="16sp"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:text="@string/prompt"
+            android:textColor="@color/defaultTextColor"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="6sp"
+            android:paddingEnd="6sp" />
+
+        <EditText
+            android:id="@+id/command"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textColor="@color/defaultTextColor"
+            android:textCursorDrawable="@drawable/custom_cursor"
+            android:textSize="15sp"
+            android:background="@null"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/command_output"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:paddingBottom="16sp"
+        android:layout_alignParentBottom="false"
+        android:background="@color/colorBlack"
+        android:scrollbars="none" />
+
+
+</RelativeLayout>
