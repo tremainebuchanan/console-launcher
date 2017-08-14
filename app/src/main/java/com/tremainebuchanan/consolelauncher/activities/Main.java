@@ -1,6 +1,8 @@
 package com.tremainebuchanan.consolelauncher.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -17,26 +19,36 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
 import com.tremainebuchanan.consolelauncher.R;
 import com.tremainebuchanan.consolelauncher.adapters.CommandAdapter;
 import com.tremainebuchanan.consolelauncher.models.Command;
+import com.tremainebuchanan.consolelauncher.utilities.StringFilter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main extends AppCompatActivity {
     private static String TAG = "HomeActivity";
+    private static String PREF = "console";
+    private static String COMMANDS = "commandList";
     private List<Command> commandList = new ArrayList<>();
     private RecyclerView recyclerView;
     private CommandAdapter mAdapter;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         final EditText command = (EditText) findViewById(R.id.command);
         recyclerView = (RecyclerView) findViewById(R.id.command_output);
         mAdapter = new CommandAdapter(commandList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
@@ -45,12 +57,9 @@ public class Main extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    Log.d(TAG, command.getText().toString());
                     addCommand(command.getText().toString());
-                    //command.setText("");
-                    //listApps();
-                    launchApp("org.mozilla.firefox");
-                    command.requestFocus();
+                    searchAndLaunchApp(command.getText().toString());
+                    command.setText("");
                     return true;
                 }
                 return false;
@@ -67,29 +76,59 @@ public class Main extends AppCompatActivity {
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
     }
 
-    private void addCommand(String input){
-        String prompt = ":~$";
-        Command command = new Command(prompt + " " + input);
+    private void addCommand(String input){;
+        Command command = new Command(input);
         commandList.add(command);
-        mAdapter.notifyDataSetChanged();
+        int last_pos = mAdapter.getItemCount() - 1;
+        recyclerView.scrollToPosition(last_pos);
     }
 
-    private void listApps(){
+    private void searchAndLaunchApp( String user_input){
+        boolean found = false;
+        Intent intent = new Intent();
         final PackageManager pm = getPackageManager();
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         for(ApplicationInfo packageInfo: packages){
-            Log.d(TAG, "Installed package :" + packageInfo.packageName);
-            Log.d(TAG, "Source dir : " + packageInfo.sourceDir);
-            Log.d(TAG, "Launch Activity :" + pm.getLaunchIntentForPackage(packageInfo.packageName));
+            if(StringFilter.contains(packageInfo.packageName, user_input.toLowerCase())){
+                intent = pm.getLaunchIntentForPackage(packageInfo.packageName);
+                found = true;
+                break;
+            }
+        }
+        if(found && intent != null){
+            intent.addCategory("android.intent.category.LAUNCHER");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }else{
+            addCommand("App not found");
         }
     }
 
-    private void launchApp( String name ){
-        Intent intent = new Intent();
-        intent.setPackage(name);
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+    public void onResume(){
+        super.onResume();
+        sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
+        String commands = sharedPreferences.getString(COMMANDS, null);
+        if(commands != null && commandList.size() == 0 ){
+            try{
+                JSONArray commandsArray = new JSONArray(commands);
+                for(int i = 0; i < commandsArray.length(); i++){
+                    JSONObject command = commandsArray.getJSONObject(i);
+                    addCommand(command.getString("user_input"));
+                }
+            }catch(JSONException e){
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
+    public void onPause(){
+        super.onPause();
+        Gson gson = new Gson();
+        String jsonList = gson.toJson(commandList);
+        sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(COMMANDS, jsonList);
+        editor.apply();
     }
 }
 

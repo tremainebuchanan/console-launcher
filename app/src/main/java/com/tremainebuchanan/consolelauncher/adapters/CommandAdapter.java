@@ -18,10 +18,12 @@ public class CommandAdapter extends RecyclerView.Adapter<CommandAdapter.MyViewHo
     private List<Command> commandList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
-        public TextView input;
+        private TextView input;
+        private TextView commandPrompt;
         public MyViewHolder(View view){
             super(view);
             input =  (TextView) view.findViewById(R.id.input);
+            commandPrompt = (TextView) view.findViewById(R.id.commandPrompt);
         }
     }
 
@@ -40,6 +42,7 @@ public class CommandAdapter extends RecyclerView.Adapter<CommandAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Command command = commandList.get(position);
+        holder.commandPrompt.setText(":~$");
         holder.input.setText(command.getUserInput());
     }
 

@@ -5,6 +5,6 @@
     <size android:height="4sp" />
     <padding
         android:bottom="-2sp"
-        android:top="-6sp" />
+        android:top="-4sp" />
     <solid android:color="@color/defaultTextColor"/>
 </shape>

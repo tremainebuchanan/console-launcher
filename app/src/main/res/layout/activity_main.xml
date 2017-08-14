@@ -6,14 +6,15 @@
     android:paddingTop="16sp"
     android:paddingBottom="16sp"
     android:paddingEnd="16sp"
-    android:paddingStart="4sp"
+    android:paddingStart="8sp"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
+        android:id="@+id/controls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
         android:paddingBottom="16sp"
         android:layout_alignParentBottom="true">
 
@@ -23,8 +24,8 @@
             android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="6sp"
-            android:paddingEnd="6sp" />
+            android:paddingStart="8sp"
+            android:paddingEnd="8sp"/>
 
         <EditText
             android:id="@+id/command"
@@ -38,16 +39,17 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/command_output"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:paddingBottom="16sp"
-        android:layout_alignParentBottom="false"
-        android:background="@color/colorBlack"
-        android:scrollbars="none" />
-
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/command_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="8sp"
+            android:paddingBottom="8sp"
+            android:background="@color/colorBlack"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="true"
+            android:layout_above="@id/controls"/>
 
 </RelativeLayout>
